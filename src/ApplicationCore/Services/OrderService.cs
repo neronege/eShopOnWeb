@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Ardalis.GuardClauses;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
@@ -19,12 +20,35 @@ public class OrderService : IOrderService
     public OrderService(IRepository<Basket> basketRepository,
         IRepository<CatalogItem> itemRepository,
         IRepository<Order> orderRepository,
+
         IUriComposer uriComposer)
     {
         _orderRepository = orderRepository;
         _uriComposer = uriComposer;
         _basketRepository = basketRepository;
         _itemRepository = itemRepository;
+
+    }
+
+    public async Task<bool> ApproveOrderAsync(int orderId)
+    {
+        // Siparişi veritabanından al
+        var order = await _orderRepository.GetByIdAsync(orderId);
+
+        // Sipariş bulunamazsa false döndür
+        if (order == null)
+        {
+            return false;
+        }
+
+        // Siparişin durumunu "Approved" olarak güncelle
+        order.SetStatus();
+
+        // Veritabanında güncellemeyi yap
+        await _orderRepository.UpdateAsync(order);
+
+        // İşlem başarılı olduğu için true döndür
+        return true;
     }
 
     public async Task CreateOrderAsync(int basketId, Address shippingAddress)
@@ -43,11 +67,22 @@ public class OrderService : IOrderService
             var catalogItem = catalogItems.First(c => c.Id == basketItem.CatalogItemId);
             var itemOrdered = new CatalogItemOrdered(catalogItem.Id, catalogItem.Name, _uriComposer.ComposePicUri(catalogItem.PictureUri));
             var orderItem = new OrderItem(itemOrdered, basketItem.UnitPrice, basketItem.Quantity);
+
             return orderItem;
         }).ToList();
 
-        var order = new Order(basket.BuyerId, shippingAddress, items);
+        var order = new Order(basket.BuyerId, shippingAddress, items, "Pending");
 
         await _orderRepository.AddAsync(order);
+    }
+
+    public async Task<List<Order>> GetOrdersAsync()
+    {
+        // Tüm siparişleri al
+        var orders = await _orderRepository.ListAsync();
+
+
+        // Alınan sipariş listesini döndür
+        return orders;
     }
 }

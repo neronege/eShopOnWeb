@@ -1,7 +1,9 @@
 ﻿@page "/admin"
+
 @attribute [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS)]
 @inherits BlazorAdmin.Helpers.BlazorComponent
 @namespace BlazorAdmin.Pages.CatalogItemPage
+
 
 <PageTitle>eShopOnWeb Admin: Manage Product Catalog</PageTitle>
 
@@ -10,14 +12,15 @@
 @if (catalogItems == null)
 {
     <Spinner></Spinner>
-}
-else
-{
+} 
+ else
+ {
 
     <p class="esh-link-wrapper">
         <button class="btn btn-primary" @onclick="@(CreateClick)">
             Create New
         </button>
+     
     </p>
 
     <table class="table table-striped table-hover">
@@ -54,14 +57,16 @@ else
                         <button @onclick="@(() => DeleteClick(item.Id))" @onclick:stopPropagation="true" class="btn btn-danger">
                             Delete
                         </button>
+                      
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <Details Brands="@catalogBrands" Types="@catalogTypes" OnEditClick="EditClick" @ref="DetailsComponent"></Details>
-    <Edit Brands="@catalogBrands" Types="@catalogTypes" OnSaveClick="ReloadCatalogItems" @ref="EditComponent"></Edit>
-    <Create Brands="@catalogBrands" Types="@catalogTypes" OnSaveClick="ReloadCatalogItems" @ref="CreateComponent"></Create>
-    <Delete Brands="@catalogBrands" Types="@catalogTypes" OnSaveClick="ReloadCatalogItems" @ref="DeleteComponent"></Delete>
-}
+    <Details Brands="@catalogBrands" Types="@catalogTypes"   OnEditClick="EditClick"   @ref="DetailsComponent"></Details>
+
+    <Edit Brands="@catalogBrands"    Types="@catalogTypes" OnSaveClick="ReloadCatalogItems" @ref="EditComponent"></Edit>
+    <Create Brands="@catalogBrands"  Types="@catalogTypes" OnSaveClick="ReloadCatalogItems" @ref="CreateComponent"></Create>
+    <Delete Brands="@catalogBrands"  Types="@catalogTypes" OnSaveClick="ReloadCatalogItems" @ref="DeleteComponent"></Delete>
+ } 

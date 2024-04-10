@@ -8,6 +8,8 @@
   <ItemGroup>
     <PackageReference Include="BlazorInputFile" />
     <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Mapster" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 
 </Project>

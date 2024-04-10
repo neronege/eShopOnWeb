@@ -1,7 +1,10 @@
 ﻿using BlazorAdmin.Services;
 using BlazorShared.Interfaces;
 using BlazorShared.Models;
+using Microsoft.eShopWeb.ApplicationCore.Interfaces;
+using Microsoft.eShopWeb.ApplicationCore.Services;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace BlazorAdmin;
 
@@ -14,7 +17,12 @@ public static class ServicesConfiguration
         services.AddScoped<ICatalogLookupDataService<CatalogType>, CachedCatalogLookupDataServiceDecorator<CatalogType, CatalogTypeResponse>>();
         services.AddScoped<CatalogLookupDataService<CatalogType, CatalogTypeResponse>>();
         services.AddScoped<ICatalogItemService, CachedCatalogItemServiceDecorator>();
-        services.AddScoped<CatalogItemService>();
+        services.AddScoped<ICatalogItemService, CatalogItemService>();
+
+
+        services.AddScoped<IBasketService, BasketService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IUriComposer, UriComposer>();
 
         return services;
     }

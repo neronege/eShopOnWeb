@@ -17,6 +17,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#admin");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+
 var configSection = builder.Configuration.GetRequiredSection(BaseUrlConfiguration.CONFIG_NAME);
 builder.Services.Configure<BaseUrlConfiguration>(configSection);
 
@@ -27,9 +28,11 @@ builder.Services.AddScoped<HttpService>();
 
 builder.Services.AddBlazoredLocalStorage();
 
+
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped(sp => (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
+
 
 builder.Services.AddBlazorServices();
 

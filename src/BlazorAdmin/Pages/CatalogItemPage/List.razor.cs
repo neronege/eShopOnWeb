@@ -26,6 +26,7 @@ public partial class List : BlazorComponent
     private Details DetailsComponent { get; set; }
     private Create CreateComponent { get; set; }
 
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -65,4 +66,7 @@ public partial class List : BlazorComponent
         catalogItems = await CatalogItemService.List();
         StateHasChanged();
     }
+
+
 }
+

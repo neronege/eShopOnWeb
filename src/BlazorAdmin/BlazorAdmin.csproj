@@ -1,19 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">	
+	<PropertyGroup>
+	  <UserSecretsId>8f5c390c-e703-4c05-b22d-8caf5df6dc64</UserSecretsId>
+	</PropertyGroup>	
 	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" />
 		<PackageReference Include="BlazorInputFile" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+		<PackageReference Include="HtmlAgilityPack" />
+		<PackageReference Include="Mapster" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" />		
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" />		
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" />
 		<PackageReference Include="System.Net.Http.Json" />
+		<PackageReference Include="Unity" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
 		<ProjectReference Include="..\BlazorShared\BlazorShared.csproj" />
-	</ItemGroup>
+		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+
+  </ItemGroup>
 
 	<ItemGroup>
 		<Compile Update="Services\CatalogItem\Delete.EditCatalogItemResult.cs">

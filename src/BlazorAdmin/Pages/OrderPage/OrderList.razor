@@ -1,0 +1,84 @@
+﻿@inherits BlazorAdmin.Helpers.BlazorComponent
+@attribute [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS)]
+@page "/admin/orderlist"
+@namespace BlazorAdmin.Pages.OrderPage
+@using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate
+@using Microsoft.eShopWeb.ApplicationCore.Interfaces
+@using static System.Net.WebRequestMethods
+@using System.Net.Http.Json
+@using System.Text.Json
+@using Microsoft.eShopWeb.Infrastructure.Data
+
+
+<PageTitle>eShopOnWeb Admin: Order List</PageTitle>
+
+<h3>Sipariş Listesi</h3>
+
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sipariş Tarihi</th>
+                <th>Sipariş Eden Kullanıcı</th>
+                <th>Toplam Tutar</th>
+                <th>Sipariş Durumu</th>
+                <th>Detaylar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(Orders != null)
+        {
+            @foreach (var order in Orders)
+            {
+                <tr>
+                    <td>@order.OrderDate</td>
+                    <td>@order.BuyerId</td>
+                    <td>@order.TotalPrice</td>
+                    <td>@order.Status</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ShowOrderDetailModal(order.Id)">Detaylar</button>
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+
+
+@if (showOrder)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sipariş Detayları</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="CloseModal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h4>Sipariş Kalemleri:</h4>
+                    <ul>
+                        
+                       
+                            <li>
+                            <p>Ürün Adı: @name</p>
+                            <p>Ürün Adedi: @count</p>
+                            <p>Tutar: @price</p>
+                            <p>Durum : @status</p>
+                            </li>
+                      
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="ApproveOrder">Onayla</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+

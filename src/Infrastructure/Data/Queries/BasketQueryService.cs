@@ -23,9 +23,10 @@ public class BasketQueryService : IBasketQueryService
     {
         var totalItems = await _dbContext.Baskets
             .Where(basket => basket.BuyerId == username)
-            .SelectMany(item => item.Items)
-            .SumAsync(sum => sum.Quantity);
+            .SelectMany(basket => basket.Items.OrderBy(item => item.Id))
+            .SumAsync(item => item.Quantity);
 
         return totalItems;
     }
+
 }

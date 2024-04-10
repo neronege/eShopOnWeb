@@ -16,7 +16,7 @@ public static class ConfigureCoreServices
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
 
         services.AddScoped<IBasketService, BasketService>();
-        services.AddScoped<IOrderService, OrderService>();
+
         services.AddScoped<IBasketQueryService, BasketQueryService>();
 
         var catalogSettings = configuration.Get<CatalogSettings>() ?? new CatalogSettings();

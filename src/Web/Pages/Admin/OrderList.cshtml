@@ -1,0 +1,50 @@
+﻿@page
+@namespace Web.Admin
+@using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate
+
+@{
+    ViewData["Title"] = "Admin - Orders List";
+    @model Web.Pages.Admin.OrderList
+
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+           
+            <h3>Sipariş Listesi</h3>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Sipariş Tarihi</th>
+                        <th>Sipariş Eden Kullanıcı</th>
+                        <th>Toplam Tutar</th>
+                        <th>Sipariş Durumu</th>
+                        <th>Detaylar</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                          @foreach(var order in Model.Orders)
+                        {
+                            <tr>
+                                <td>@order.OrderDate</td>
+                                <td>@order.BuyerId</td>
+                                <td>@order.TotalPrice</td> 
+                                <td>@order.Status</td>
+                                 <td>@order.Id</td>
+                               
+                            </tr>
+                        }
+                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
