@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BlazorAdmin.Helpers;
@@ -32,6 +33,7 @@ public partial class OrderList : BlazorComponent
 
 
     string _apiUrl = "https://localhost:5001/";
+    string _debug = "https://localhost:44315/";
     string uri = "admin/orderlist";
     public string name;
     public string price;
@@ -41,42 +43,67 @@ public partial class OrderList : BlazorComponent
     {
         List<Order> orders = new List<Order>();
 
-        var document = new HtmlDocument();
-        document.LoadHtml(content);
-
-        var rows = document.DocumentNode.SelectNodes("//table[@class='table']//tbody//tr");
-        if (rows != null)
+        try
         {
-            foreach (var row in rows)
+            var document = new HtmlDocument();
+            document.LoadHtml(content);
+
+            var rows = document.DocumentNode.SelectNodes("//table[@class='table']//tbody//tr");
+            if (rows != null)
             {
-                var cells = row.SelectNodes("td");
-                if (cells != null && cells.Count >= 1)
+                foreach (var row in rows)
                 {
-                    var orderDate = cells[0].InnerText.Replace(" &#x2B;03:00", "");
-                    var buyerId = cells[1].InnerText;
-                    var total = decimal.Parse(cells[2].InnerText);
-                    var status = cells[3].InnerText;
-                    var id = cells[4].InnerText;
-                    var order = new Order
+                    var cells = row.SelectNodes("td");
+                    if (cells != null && cells.Count >= 1)
                     {
-                        OrderDate = DateTimeOffset.Parse(orderDate),
-                        BuyerId = buyerId,
-                        TotalPrice = total,
-                        Status = status,
-                        Id = int.Parse(id)
+                        var orderDate = cells[0].InnerText.Replace(" &#x2B;03:00", "").Trim();
+                        var buyerId = cells[1].InnerText.Trim();
+                        var total = decimal.Parse(cells[2].InnerText, CultureInfo.InvariantCulture);
+                        var status = cells[3].InnerText.Trim();
+                        var id = cells[4].InnerText.Trim();
 
-                    };
+                        int plusIndex = orderDate.LastIndexOf('+');
+                        if (plusIndex >= 0)
+                        {
+                            orderDate = orderDate.Substring(0, plusIndex).Trim();
+                        }
+                        var orderDateClean = orderDate.Replace(" AM", "").Replace(" PM", "").Replace(" +03:00", "");
+                        // Doğru tarih formatını belirlemek
+                        string[] format = { "dd/MM/yyyy HH:mm:ss" };
 
-                    orders.Add(order);
+                        DateTime dateTime;
+                        bool isValidDate = DateTime.TryParseExact(orderDateClean, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
 
+                        if (isValidDate)
+                        {
+                            var order = new Order
+                            {
+                                OrderDate = dateTime,
+                                BuyerId = buyerId,
+                                TotalPrice = total,
+                                Status = status,
+                                Id = int.Parse(id)
+                            };
 
-
+                            orders.Add(order);
+                        }
+                        else
+                        {
+                            // Hatalı tarih formatı için hata mesajı
+                            Console.WriteLine($"Error parsing date: {orderDate}");
+                        }
+                    }
                 }
             }
         }
-        return orders;
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ParseOrdersFromContent hatası: {ex.Message}");
+        }
 
+        return orders;
     }
+
 
     private async void GetOrderItems(int id)
     {
@@ -117,24 +144,27 @@ public partial class OrderList : BlazorComponent
         {
             try
             {
+                Console.WriteLine("HTTP isteği gönderiliyor...");
                 var response = await _httpClient.GetAsync(_apiUrl + uri);
+                Console.WriteLine("HTTP isteği tamamlandı.");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     Orders = await ParseOrdersFromContent(content);
-
-
                 }
                 else
                 {
                     // Hata durumunda kullanıcıya bilgi ver
-                    _toastService.ShowToast("Sipariş kalemleri alınırken bir hata oluştu.", ToastLevel.Error);
+                    _toastService.ShowToast($"Sipariş kalemleri alınırken bir hata oluştu: {response.ReasonPhrase}", ToastLevel.Error);
+                    Console.WriteLine($"HTTP isteği başarısız: {response.ReasonPhrase}");
                 }
             }
             catch (Exception ex)
             {
                 // Hata durumunda kullanıcıya bilgi ver
-                _toastService.ShowToast("Siparişler alınırken bir hata oluştu.", ToastLevel.Error);
+                _toastService.ShowToast($"Siparişler alınırken bir hata oluştu: {ex.Message}", ToastLevel.Error);
+                Console.WriteLine($"HTTP isteği sırasında hata oluştu: {ex.Message}");
             }
             CallRequestRefresh();
             StateHasChanged();
