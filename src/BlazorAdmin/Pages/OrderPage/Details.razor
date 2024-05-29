@@ -1,0 +1,113 @@
+@inject ILogger<Details> Logger
+@inject IJSRuntime JSRuntime
+@inject IOrdersService OrdersService
+
+@inherits BlazorAdmin.Helpers.BlazorComponent
+
+@namespace BlazorAdmin.Pages.OrdersPage
+
+<div class="modal @_modalClass" tabindex="-1" role="dialog" style="display:@_modalDisplay">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Details @_order.id</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                @if (_order == null)
+                {
+                    <Spinner></Spinner>
+                }
+                else
+                {
+                    <div class="container">
+                        <div class="row">
+
+
+                            <dl class="col-md-12 dl-horizontal">
+                                <dt>
+                                    Order Date
+                                </dt>
+
+                                <dd>
+                                    @_order.orderDate
+                                </dd>
+
+                            </dl>
+
+                        </div>
+
+                    </div>
+
+                    @if (_order.orderItems != null)
+                    {
+                        foreach (var item in _order.orderItems)
+                        {
+                            <Items Item="@item" />
+                        }
+                    }
+                }
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Close</button>
+                @if (_order.status != "Approved")
+                {
+                    <button class="btn btn-primary" @onclick="ApproveClick">
+                        Approve
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (_showDetailsModal)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+
+    [Parameter]
+    public EventCallback<int> OnApproveClick { get; set; }
+
+    private string _modalDisplay = "none;";
+    private string _modalClass = "";
+    private bool _showDetailsModal = false;
+    private Order _order = new Order();
+    public async Task ApproveClick()
+    {
+        await OnApproveClick.InvokeAsync(_order.id);
+        await Close();
+    }
+
+    public async Task Open(int id)
+    {
+
+        Logger.LogInformation("Now loading... /Orders/Details/{Id}", id);
+
+        await new Css(JSRuntime).HideBodyOverflow();
+
+        _order = await OrdersService.GetById(id);
+
+        _modalDisplay = "block;";
+        _modalClass = "Show";
+        _showDetailsModal = true;
+
+        StateHasChanged();
+    }
+
+    public async Task Close()
+    {
+        await new Css(JSRuntime).ShowBodyOverflow();
+
+        _modalDisplay = "none";
+        _modalClass = "";
+        _showDetailsModal = false;
+    }
+
+}

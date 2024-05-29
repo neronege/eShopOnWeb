@@ -44,7 +44,9 @@ namespace Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate
         {
             return Status = "Approved";
         }
-
-
+        public void UpdateStatus(string status)
+        {
+            Status = status;
+        }
     }
 }

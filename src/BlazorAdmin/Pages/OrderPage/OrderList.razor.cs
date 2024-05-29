@@ -29,9 +29,6 @@ public partial class OrderList : BlazorComponent
     [Microsoft.AspNetCore.Components.Inject]
     private HttpService _service { get; set; }
 
-
-
-
     string _apiUrl = "https://localhost:5001/";
     string _debug = "https://localhost:44315/";
     string uri = "admin/orderlist";

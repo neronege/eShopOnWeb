@@ -1,0 +1,98 @@
+@inject ILogger<Items> Logger
+@inject IJSRuntime JSRuntime
+@inject IOrdersService OrdersService
+
+@inherits BlazorAdmin.Helpers.BlazorComponent
+
+@namespace BlazorAdmin.Pages.OrdersPage
+
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+
+        </div>
+        <div class="modal-body">
+
+            @if (Item == null)
+            {
+                <Spinner></Spinner>
+            }
+            else
+            {
+                <div class="container">
+                    <div class="row">
+                        @if (HasPicture)
+                        {
+                            <img class="col-md-6 esh-picture" src="@($"{Item.ItemOrdered.PictureUri}")">
+                        }
+
+
+                        <dl class="col-md-@(HasPicture?"6":"12") dl-horizontal">
+                            <dt>
+                                Name
+                            </dt>
+
+                            <dd>
+                                @Item.ItemOrdered.ProductName
+                            </dd>
+
+                            <dt>
+                                Units
+                            </dt>
+
+                            <dd>
+                                @Item.units
+                            </dd>
+
+                            <dt>
+                                Price
+                            </dt>
+
+                            <dd>
+                                @Item.UnitPrice
+                            </dd>
+
+                        </dl>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public OrderItem Item { get; set; }
+
+
+    private bool HasPicture => !string.IsNullOrEmpty(Item.ItemOrdered.PictureUri);
+
+    @*
+public async Task Open(int id)
+{
+
+Logger.LogInformation("Now loading... /Catalog/Details/{Id}", id);
+
+await new Css(JSRuntime).HideBodyOverflow();
+
+_item = await CatalogItemService.GetById(id);
+
+_modalDisplay = "block;";
+_modalClass = "Show";
+_showDetailsModal = true;
+
+StateHasChanged();
+}
+
+public async Task Close()
+{
+await new Css(JSRuntime).ShowBodyOverflow();
+
+_modalDisplay = "none";
+_modalClass = "";
+_showDetailsModal = false;
+} *@
+
+}

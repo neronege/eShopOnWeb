@@ -5,6 +5,7 @@ using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.PublicApi.CatalogBrandEndpoints;
 using Microsoft.eShopWeb.PublicApi.CatalogItemEndpoints;
 using Microsoft.eShopWeb.PublicApi.CatalogTypeEndpoints;
+using Microsoft.eShopWeb.PublicApi.OrderEndpoints;
 using Microsoft.eShopWeb.PublicApi.OrderItemEndpoints;
 using Microsoft.eShopWeb.PublicApi.OrderListEndpoints;
 
@@ -32,6 +33,8 @@ public class MappingProfile : Profile
                     Id = item.Id
                 }).ToList()))
                .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.TotalPrice));
+
+        CreateMap<Order, OrderDto>();
 
 
     }

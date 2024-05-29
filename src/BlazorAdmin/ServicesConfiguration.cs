@@ -24,6 +24,9 @@ public static class ServicesConfiguration
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IUriComposer, UriComposer>();
 
+        services.AddScoped<IOrdersService, OrdersService>();
+        services.AddScoped<OrdersService>();
+
         return services;
     }
 }

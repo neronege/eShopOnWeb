@@ -1,0 +1,109 @@
+﻿@inject ILogger<Edit> Logger
+@inject IJSRuntime JSRuntime
+@inject IOrdersService OrdersService
+
+@inherits BlazorAdmin.Helpers.BlazorComponent
+
+@namespace BlazorAdmin.Pages.OrdersPage
+
+<div class="modal @_modalClass" tabindex="-1" role="dialog" style="display:@_modalDisplay">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <EditForm Model="_order" OnValidSubmit="@SaveClick">
+                <DataAnnotationsValidator />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit @_order.id</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    @if (_order == null)
+                    {
+                        <Spinner></Spinner>
+                    }
+                    else
+                    {
+                        <div class="container">
+                            <div class="row">
+
+                                <div class="col-md-12 ">
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-6">Id</label>
+                                        <div class="col-md-12">
+                                            asd
+                                            <ValidationMessage For="(() => _order.id)" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-12">
+                                    gevezelikler
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        @onclick="Close">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        Save
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+
+
+@if (_showEditModal)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> OnSaveClick { get; set; }
+
+    private string _badFileMessage = string.Empty;
+    private string _modalDisplay = "none;";
+    private string _modalClass = "";
+    private bool _showEditModal = false;
+    private Order _order = new Order();
+
+    private async Task SaveClick()
+    {
+        await OrdersService.Edit(_order);
+        await OnSaveClick.InvokeAsync(null);
+        await Close();
+    }
+
+    public async Task Open(int id)
+    {
+        Logger.LogInformation("Now loading... /Orders/Edit/{Id}", id);
+
+        await new Css(JSRuntime).HideBodyOverflow();
+
+        _order = await OrdersService.GetById(id);
+
+        _modalDisplay = "block;";
+        _modalClass = "Show";
+        _showEditModal = true;
+
+        StateHasChanged();
+    }
+
+    private async Task Close()
+    {
+        await new Css(JSRuntime).ShowBodyOverflow();
+
+        _modalDisplay = "none";
+        _modalClass = "";
+        _showEditModal = false;
+    }
+}

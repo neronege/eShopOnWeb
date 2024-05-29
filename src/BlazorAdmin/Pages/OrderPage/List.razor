@@ -1,0 +1,59 @@
+@page "/admin/orders"
+@attribute [Authorize(Roles = BlazorShared.Authorization.Constants.Roles.ADMINISTRATORS)]
+@inherits BlazorAdmin.Helpers.BlazorComponent
+@namespace BlazorAdmin.Pages.OrdersPage
+@using System.Globalization
+
+<PageTitle>eShopOnWeb Admin: Order List</PageTitle>
+
+<h1>Order List</h1>
+
+@if (orders == null)
+{
+    <Spinner></Spinner>
+}
+else
+{
+    <table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Buyer</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody class="cursor-pointer">
+        @foreach (var order in orders)
+            {
+                <tr @onclick="@(() => DetailsClick(order.id))">
+                    <td>@order.buyerId</td>
+                    <td>@order.total</td>
+                    <td>@FormatDateTime(order.orderDate)</td>
+                    <td>@order.status</td>
+                    <td>
+                        
+                            <button @onclick="@(() => ApproveClick(order.id))" @onclick:stopPropagation="true"
+                                class="btn btn-primary">
+                                Approve
+                            </button>
+                        
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <Details OnApproveClick="ApproveClick" @ref="DetailsComponent"></Details>
+
+    @code{
+    public string FormatDateTime(DateTime dateTime)
+    {
+        CultureInfo trCulture = new CultureInfo("tr-TR");
+        return dateTime.ToString("ddd dd-MM-yyy H:mm", trCulture);
+    }
+    }
+
+}
